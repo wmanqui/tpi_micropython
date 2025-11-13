@@ -1,0 +1,58 @@
+
+
+.panel-metal{
+    background: linear-gradient(135deg,#cfcfcf, #9e9e9e);
+    width: 420px;
+    border: 2px solid #555;
+    border-radius: 14px;
+    padding: 35px 45px;
+    box-shadow: 
+        inset 0 0 10px rgba(255,255,255,0.4),
+        inset 0 0 25px rgba(0,0,0,0.4),
+        0 8px 20px rgba(0,0,0,0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.panel-metal::before,
+.panel-metal::after{
+    content: "";
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle, #aaa,#333);
+    border-radius: 50%;
+    position: absolute;
+}
+
+.panel-metal::before{
+    top: 8px;
+    left: 8px;
+}
+
+.panel-metal::after{
+    bottom: 8px;
+    right: 8px;
+}
+
+.panel-title{
+    font-family: sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #111;
+    font-size: 18px;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px #fff, -1px -1px 2px #777;
+}
+
+.panel-content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}

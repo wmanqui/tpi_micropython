@@ -1,0 +1,14 @@
+.meter-container{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+canvas{
+    border-radius: 50%;
+}

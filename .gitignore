@@ -1,0 +1,52 @@
+#------ frontend -------
+node_modules/
+build/
+dist/
+.cache/
+coverage/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+#------ backend ---------
+node_modules/
+logs/
+*.log
+npm-debug.log*
+.env
+.env.*
+
+#---- micropython -------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.mpy
+*.manifest
+.micropython/
+env/
+venv/
+.venv
+
+#------ vs code --------
+.vscode/
+.history/
+*.code-workspace
+
+
+#------ linux ---------
+*.swp
+*.swo
+*~
+.cache/
+.Trash.*
+.npm/
+.local/
+.config/
+--MACOSX/
