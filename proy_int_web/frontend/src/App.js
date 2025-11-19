@@ -7,8 +7,8 @@ import Panel from "./components/Panel";
 
 function App(){
 
-  //IP local del ESP32 
-  const ESP32_IP = "http://localhost:3001" 
+  //Ip del servidor
+  const SERVER_IP = "http://localhost:3001" 
  
   //led1: alamacena el estado actual de la variable
   //setled1: función para cambiar el estado
@@ -19,7 +19,7 @@ function App(){
     const newState =! ledOn? "ON": "OFF";
     try{
       //Envia la orden al ESP32(realiza petición http)
-      await fetch(`${ESP32_IP}/${newState}`);
+      await fetch(`${SERVER_IP}/${newState}`);
       setLedOn((prev) => !prev);
 
     }
