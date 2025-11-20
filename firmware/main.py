@@ -1,45 +1,28 @@
-import network
-import socket
-from machine import Pin
+#Este programa enciende y apaga el led integrado en la placa esp32 desde un frontend
+#hecho en Reactjs que a la vez se conecta con un servidor de nodejs
 
-# LED integrado (pin 2)
-led = Pin(2, Pin.OUT)
 
-# Conectar a WiFi
+from wifi_module import connect_wifi
+from server_module import iniciar_servidor
+from led_module import encender, apagar
+
 ssid = "Zhone_0328"
 password = "Whitealbum@1"
 
-wlan = network.WLAN(network.STA_IF)
-wlan.active(True)
-wlan.connect(ssid, password)
+#Ip de la placa esp32
+ip = connect_wifi(ssid, password)
 
-while not wlan.isconnected():
-    pass
 
-print("Conectado a WiFi, IP:", wlan.ifconfig()[0])
-
-# Servidor web simple
-addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
-s = socket.socket()
-s.bind(addr)
-s.listen(1)
-print("Escuchando en", addr)
-
-while True:
-    cl, addr = s.accept()
-    print('Cliente conectado desde', addr)
-    request = cl.recv(1024)
-    request = str(request)
-    
+# Función que maneja las peticiones HTTP
+def manejar_peticion(request):
     if '/ON' in request:
-        led.value(1)
-        response = "LED encendido"
+        encender()
+        return "LED encendido"
     elif '/OFF' in request:
-        led.value(0)
-        response = "LED apagado"
+        apagar()
+        return "LED apagado"
     else:
-        response = "Uso: /ON o /OFF"
-    
-    cl.send('HTTP/1.0 200 OK\r\nContent-type: text/plain\r\n\r\n')
-    cl.send(response)
-    cl.close()
+        return "Uso: /ON o /OFF"
+
+#Inicia servidor en el puerto 80
+iniciar_servidor(80, manejar_peticion)
