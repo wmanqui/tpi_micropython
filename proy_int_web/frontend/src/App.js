@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import AnalogGauge from "./components/AnalogGauge";
+import React, {useEffect,useState} from "react";
+//import AnalogGauge from "./components/AnalogGauge";
 import LedIndicator from "./components/LedIndicator";
 import ControlButton from "./components/ControlButton";
 import Panel from "./components/Panel";
@@ -7,27 +7,43 @@ import Panel from "./components/Panel";
 
 function App(){
 
-  //Ip del servidor
-  const SERVER_IP = "http://localhost:3001" 
- 
-  //led1: alamacena el estado actual de la variable
-  //setled1: función para cambiar el estado
+  //Crea variable "socket" y la inicializa en "null"
+  //"setSocket" permite cambiar "socket"
+  const[socket, setsocket] = useState(null);
+
+  //Crea variable "ledOn" y la inicializa en "false"
+  //"setLedOn" permite cambiar "setLedOn"
   const[ledOn,setLedOn] = useState(false);
   
 
-  const toggleLed = async() =>{
-    const newState =! ledOn? "ON": "OFF";
-    try{
-      //Envia la orden al ESP32(realiza petición http)
-      await fetch(`${SERVER_IP}/${newState}`);
-      setLedOn((prev) => !prev);
+  useEffect(() => {
+    //Se conecta al WebSocket 
+    const ws= new WebSocket("ws://localhost:3001");
+    setsocket(ws);
 
+    //LLega mensaje del servidor
+    ws.onmessage = (event) => {
+      console.log("Mensaje del servidor:", event.data);
+      //Convierte el texto a JSON
+      const data = JSON.parse(event.data); 
+     //Interpreta el tipo de mensaje
+      if(data.type === "LED_STATE"){
+        setLedOn(data.value);
+      }
+      
+    };
+    return () => ws.close();
+  },[]);
+
+  const toggleLed = () =>{
+    if(socket){
+      //Envia el JSON al servidor para solicitar modificación
+      socket.send(JSON.stringify({
+        action: "TOGGLE_LED"
+      }));
     }
-    catch(error){
-      console.error("salvenos quien pueda", error);
-    }    
-  };
 
+  };
 
   return(
   <>
