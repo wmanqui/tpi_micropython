@@ -1,28 +1,70 @@
-#Este programa enciende y apaga el led integrado en la placa esp32 desde un frontend
-#hecho en Reactjs que a la vez se conecta con un servidor de nodejs
+import network
+import socket
+import machine
+
+# CONFIGURA TU WIFI --------------------------
+SSID = "Zhone_0328"
+PASSWORD = "Whitealbum@1"
+
+# LED en el pin 2 (la mayoría ESP32)
+led = machine.Pin(2, machine.Pin.OUT)
 
 
-from wifi_module import connect_wifi
-from server_module import iniciar_servidor
-from led_module import encender, apagar
+# CONEXIÓN A WIFI ----------------------------
+def connect_wifi():
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(SSID, PASSWORD)
 
-ssid = "Zhone_0328"
-password = "Whitealbum@1"
+    print("Conectando a WiFi...")
+    while not wlan.isconnected():
+        pass
+    print("Conectado!")
+    print("IP:", wlan.ifconfig()[0])
+    return wlan.ifconfig()[0]
 
-#Ip de la placa esp32
-ip = connect_wifi(ssid, password)
+
+# SERVIDOR HTTP SIMPLE ------------------------
+def start_server():
+    ip = connect_wifi()
+
+    addr = socket.getaddrinfo(ip, 80)[0][-1]
+    s = socket.socket()
+    s.bind(addr)
+    s.listen(5)
+
+    print("Servidor HTTP corriendo en:", ip)
+
+    while True:
+        cl, addr = s.accept()
+        print("Cliente conectado:", addr)
+
+        request = cl.recv(1024)
+        request = request.decode("utf-8")
+        print("Petición:", request)
+
+        # Detecta si pidieron ON u OFF
+        if "GET /ON" in request:
+            led.value(1)
+            response = "LED ENCENDIDO"
+            print("LED -> ON")
+
+        elif "GET /OFF" in request:
+            led.value(0)
+            response = "LED APAGADO"
+            print("LED -> OFF")
+
+        else:
+            response = "COMANDO INVALIDO"
+
+        # Respuesta HTTP obligatoria
+        cl.send("HTTP/1.1 200 OK\r\n")
+        cl.send("Content-Type: text/plain\r\n")
+        cl.send("Connection: close\r\n\r\n")
+        cl.send(response)
+
+        cl.close()
 
 
-# Función que maneja las peticiones HTTP
-def manejar_peticion(request):
-    if '/ON' in request:
-        encender()
-        return "LED encendido"
-    elif '/OFF' in request:
-        apagar()
-        return "LED apagado"
-    else:
-        return "Uso: /ON o /OFF"
-
-#Inicia servidor en el puerto 80
-iniciar_servidor(80, manejar_peticion)
+# INICIO DEL PROGRAMA --------------------------
+start_server()

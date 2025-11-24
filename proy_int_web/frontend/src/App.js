@@ -21,14 +21,20 @@ function App(){
     const ws= new WebSocket("ws://localhost:3001");
     setsocket(ws);
 
+    ws.onopen = () => {
+      ws.send(JSON.stringify({type: "GET_STATUS"}));
+    }
+
     //LLega mensaje del servidor
     ws.onmessage = (event) => {
-      console.log("Mensaje del servidor:", event.data);
       //Convierte el texto a JSON
-      const data = JSON.parse(event.data); 
-     //Interpreta el tipo de mensaje
-      if(data.type === "LED_STATE"){
-        setLedOn(data.value);
+      const msg = JSON.parse(event.data);
+      //Interpreta el tipo de mensaje
+      if(msg.type === "STATUS"){
+        setLedOn(msg.data.led);
+      }
+      if(msg.type === "LED_UPDATE"){
+        setLedOn(msg.data.led);
       }
       
     };
@@ -37,9 +43,12 @@ function App(){
 
   const toggleLed = () =>{
     if(socket){
+      //Decide el nuevo estado
+      const newState = !ledOn? "ON" : "OFF"; 
       //Envia el JSON al servidor para solicitar modificación
       socket.send(JSON.stringify({
-        action: "TOGGLE_LED"
+        type: "SET_LED",
+        data: newState
       }));
     }
 
@@ -65,4 +74,10 @@ function App(){
 
   );
 }
+
+
+
+
+
+
 export default App;
