@@ -1,5 +1,6 @@
 const axios = require("axios")
-const{ESP32_IP} = require("../config");
+//const{ESP32_IP} = require("../config");
+const{ESP32_IP} = require("../config/config");
 
 let ledState = false;
 
