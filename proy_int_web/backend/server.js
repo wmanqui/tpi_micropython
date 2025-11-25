@@ -5,7 +5,7 @@ const axios = require("axios");
 // CONFIGURACIÓN
 // ========================
 const PORT = 3001;
-const ESP32_IP = "http://192.168.1.21";  // <-- CAMBIÁ ESTA IP DE TU ESP32
+const ESP32_IP = "http://192.168.0.108";  // <-- CAMBIÁ ESTA IP DE TU ESP32
 
 let ledState = false;
 

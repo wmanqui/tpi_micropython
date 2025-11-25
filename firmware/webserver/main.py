@@ -1,33 +1,17 @@
-import network
+#Permite crear un servidor web
 import socket
+#Permite el control de los pines
 import machine
+#Permite la conexión wifi
+import wifi_module
 
-# CONFIGURA TU WIFI --------------------------
-SSID = "Zhone_0328"
-PASSWORD = "Whitealbum@1"
-
-# LED en el pin 2 (la mayoría ESP32)
+#LED en el pin 2 
 led = machine.Pin(2, machine.Pin.OUT)
 
 
-# CONEXIÓN A WIFI ----------------------------
-def connect_wifi():
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    wlan.connect(SSID, PASSWORD)
-
-    print("Conectando a WiFi...")
-    while not wlan.isconnected():
-        pass
-    print("Conectado!")
-    print("IP:", wlan.ifconfig()[0])
-    return wlan.ifconfig()[0]
-
-
-# SERVIDOR HTTP SIMPLE ------------------------
+#Servidor http simple
 def start_server():
-    ip = connect_wifi()
-
+    ip = wifi_module.wifi_connection()
     addr = socket.getaddrinfo(ip, 80)[0][-1]
     s = socket.socket()
     s.bind(addr)
@@ -65,6 +49,4 @@ def start_server():
 
         cl.close()
 
-
-# INICIO DEL PROGRAMA --------------------------
 start_server()
