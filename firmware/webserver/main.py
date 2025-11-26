@@ -30,12 +30,14 @@ def start_server():
         # Endpoints
         if "GET /ON" in request:
             led.value(1)
-            response = "LED ENCENDIDO"
+            #response = "LED ENCENDIDO"
+            response = '{"led": true}'
             print("LED -> ON")
 
         elif "GET /OFF" in request:
             led.value(0)
-            response = "LED APAGADO"
+            #response = "LED APAGADO"
+            response = '{"led": false}'
             print("LED -> OFF")
         
         elif "GET /status" in request:
@@ -55,4 +57,3 @@ def start_server():
         cl.close()
 
 start_server()
-
