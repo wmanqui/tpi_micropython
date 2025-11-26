@@ -27,7 +27,7 @@ def start_server():
         request = request.decode("utf-8")
         print("Petición:", request)
 
-        # Detecta si pidieron ON u OFF
+        # Endpoints
         if "GET /ON" in request:
             led.value(1)
             response = "LED ENCENDIDO"
@@ -37,6 +37,11 @@ def start_server():
             led.value(0)
             response = "LED APAGADO"
             print("LED -> OFF")
+        
+        elif "GET /status" in request:
+            estado_led = led.value() == 1
+            response = '{"led": %s}' % ("true" if estado_led else "false")
+            print("Status enviado:", response)
 
         else:
             response = "COMANDO INVALIDO"
@@ -50,3 +55,4 @@ def start_server():
         cl.close()
 
 start_server()
+
