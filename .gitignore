@@ -50,3 +50,6 @@ venv/
 .local/
 .config/
 --MACOSX/
+
+#------esp32---------
+firmware/mqtt/config.py
