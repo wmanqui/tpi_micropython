@@ -1,24 +1,73 @@
 //"ws": libreria que permite crear un WebSocket
 const WebSocket = require("ws");
 //"axios": libreria que permite realizat peticiones http en Node
-const axios = require("axios");
+//const axios = require("axios");
 
-//Puerto donde se va a ejucatar el WebSocket
-const PORT = 3001;
-//Dirección de IP del esp32 en la red local
-const ESP32_IP = "http://192.168.0.108";  
+const mqtt = require("mqtt");
 
+//Estado actual del LED
 let ledState = false;
 
+//--------Configuración de WebSocket------
+//Puerto donde se va a ejucatar el WebSocket
+const PORT = 3001;
 //Creación de servidor WebSocket
 const wss = new WebSocket.Server({ port: PORT });
-
+//Mensaje para indicar que el servidor esta corriendo
 console.log(`[backend] Servidor WebSocket Node escuchando en puerto ${PORT}`);
+//----------------------------------------
+
+//----Configuracion de HiveMQ Cloud ------
+const MQTT_BROKER = "8e9c811d07444d56935a3fd2bd1b0341.s1.eu.hivemq.cloud";  
+const MQTT_USER = "walter";
+const MQTT_PASSWORD = "Whitealbum1";
+const MQTT_PORT = 8883;
+//Se realiza conexión con el broker HiveMQ cloud
+const client_mqtt = mqtt.connect(`mqtts://${MQTT_BROKER}:${MQTT_PORT}`,{
+  username: MQTT_USER,
+  password: MQTT_PASSWORD,
+});
+
+
+client_mqtt.on("connect",() =>{
+  console.log("[mqtt] Conectado a HiveMQ CLoud");
+  //Se suscribe al topico
+
+  client_mqtt.subscribe("esp32/led/status", (err) => {
+    if (!err) console.log("[mqtt] Suscripto a esp32/led/Status");
+    else console.error("[mqtt] Error al subcribit al topico",err );
+  });
+
+  client_mqtt.publish("backend/info","Backend conectado correctamente");
+});
+
+//----------------------------------------
+
+
+//Llega comando desde el broker
+client_mqtt.on("message", (topic,message)=>{
+  if(topic === "esp32/led/status"){
+    ledState = message.toString() === "ON";
+    console.log("[mqtt] Estado enviado desde el Broker", ledState);
+    //Envia actuañizacón a todos los clientes WebSocket
+    broadcastLedStatus();
+  }
+});
+
 
 //Escucha conexiones entrantes
 wss.on("connection", (ws) => {
   console.log("[backend] Cliente conectado");
 
+  ws.send(JSON.stringify({
+    type: "STATUS",
+    data: {led: ledState}
+  }));
+
+  console.log("[backend] Estado inicial enviado al frontend:", ledState);
+
+
+ 
   //Escucha mensajes del cliente
   //"msg": mensaje recibido en formato de texto
   //"JSON.parse(msj)": convierte el texto a JSON
@@ -26,21 +75,22 @@ wss.on("connection", (ws) => {
     const json = JSON.parse(msg);
     console.log("[backend] Recibido desde frontend:", json);
 
-    switch (json.type) {
-      //El cliente pide el estado actual del led
+    switch(json.type){
       case "GET_STATUS":
-        //El servidor se lo pide al esp32
-        await syncStatusWithESP32(ws);
+        ws.send(JSON.stringify({
+        type: "STATUS",
+        data: {led: ledState}
+        }));
+        console.log("[backend] Estado inicial enviado al frontend:", ledState);
         break;
-      //El cliente quiere cambiar el estado del led
       case "SET_LED":
-        //El servidor lo setea en el esp32
-        await setLedOnESP32(json.data);
-        broadcastLedStatus();
+        const newState = json.data === "ON" ? "ON" : "OFF";
+        console.log("[backend] Enviando comando MQTT a broker:",newState);
+        //Publica comando en broker
+        client_mqtt.publish("esp32/led/set",newState);
         break;
-      //Si llega un mensaje desconocido se lo notifica al cliente
       default:
-        ws.send(JSON.stringify({ type: "ERROR", data: "Comando desconocido" }));
+        ws.send(JSON.stringify({type:"ERROR", data: "Comando desconocido"}))
     }
   });
   //Se ejecuta cuando el cliente se desconecta
@@ -48,39 +98,6 @@ wss.on("connection", (ws) => {
 });
 
 //Funciones
-
-//Sincroniza estado ESP32 - Frontend
-async function syncStatusWithESP32(ws) {
-  try {
-    const res = await axios.get(`${ESP32_IP}/status`);
-    ledState = res.data.led; // ESP32 debe responder { led: true/false }
-
-    ws.send(JSON.stringify({
-      type: "STATUS",
-      data: { led: ledState }
-    }));
-
-    console.log("[backend] Estado inicial enviado al frontend:", ledState);
-
-  } catch (error) {
-    console.log("Error obteniendo estado del ESP32:", error.message);
-    ws.send(JSON.stringify({ type: "STATUS", data: { led: false } }));
-  }
-}
-
-//Cambia el LED del ESP32
-async function setLedOnESP32(state) {
-  const url = state === "ON" ? "/ON" : "/OFF";
-
-  try {
-    const res = await axios.get(`${ESP32_IP}${url}`);
-    ledState = res.data.led;
-    console.log("[ESP32] LED actualizado a:", ledState);
-
-  } catch (error) {
-    console.log("Error enviando comando al ESP32:", error.message);
-  }
-}
 
 //Envía el estado a todos los clientes
 function broadcastLedStatus() {
@@ -93,3 +110,4 @@ function broadcastLedStatus() {
     if (client.readyState === WebSocket.OPEN) client.send(msg);
   });
 }
+
