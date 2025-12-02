@@ -2,8 +2,8 @@
 const WebSocket = require("ws");
 const config = require("./config")
 const state = require("./state");
-const {publishSetLed} = require("./mqttClient");
-
+const mqttClient = require("./mqttClient");
+//const {publishSetLed} = require("./mqttClient");
 
 let ws;
 
@@ -34,7 +34,7 @@ function initWebServer(){
                 const newState = json.data === "ON" ? "ON" : "OFF";
                 console.log("[backend] Enviando comando MQTT a broker:",newState);
                 //Publica comando en broker
-                client_mqtt.publish("esp32/led/set",newState);
+                mqttClient.publishSetLed("esp32/led/set",newState);
                 break;
             default:
                 ws.send(JSON.stringify({type:"ERROR", data: "Comando desconocido"}))
@@ -53,7 +53,7 @@ function broadcastLedStatus() {
     data: { led: state.ledState },
   });
 
-  wss.clients.forEach((client) => {
+  ws.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) client.send(msg);
   });
 }

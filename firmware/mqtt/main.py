@@ -19,8 +19,12 @@ TOPIC_STATUS = b"esp32/led/status"
 #Led integrado del esp32
 led = machine.Pin(2, machine.Pin.OUT)
 
+mqtt_esp32_client = None
+
 #Función que permite conectarse al broker "HiveMq cloud"
 def connect_to_mqtt():
+    global mqtt_esp32_client
+    
     ssl_params = {
         'server_hostname': MQTT_BROKER
     }
@@ -63,11 +67,13 @@ def mqtt_callback(topic, msg):
         led.value(1)
         print("Esp32: LED encendido")
         #mqtt_esp32_client.publish(TOPIC_STATUS, b"LED_ON")
+        mqtt_esp32_client.publish(TOPIC_STATUS, b"ON")
     elif msg==b"OFF":
         led.value(0)
         print("Esp32: LED apagado")
         #mqtt_esp32_client.publish(TOPIC_STATUS, b"LED_OFF")
-
+        mqtt_esp32_client.publish(TOPIC_STATUS, b"OFF")
+    
 #Programa principal
 test_client = connect_to_mqtt()
 

@@ -55,7 +55,7 @@ def wifi_connection():
             print(f"[wifi] Reintetando en {retry_delay}s...")
             time.sleep(retry_delay)
     print("[wifi] No se pudo realizar conexión tras",retries,"intentos")
-    return False        
+    return False
 
 
 #Función que solo indica si el modulo esta conectado
@@ -64,6 +64,7 @@ def is_connected():
     return wlan.isconnected()
     
 #wifi_connection()
+
 #is_connected()
 
 

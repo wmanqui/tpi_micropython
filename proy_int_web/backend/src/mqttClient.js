@@ -1,7 +1,7 @@
 const mqtt = require("mqtt");
 const config = require("./config")
 const state = require("./state");
-//const {broadcastLedStatus} = require("./webServer");
+const {broadcastLedStatus} = require("./webServer");
 
 
 let client_mqtt;
@@ -26,10 +26,10 @@ function initMQTT(){
 function msjMQTTReception(){
     client_mqtt.on("message", (topic,message)=>{
         if(topic === config.TOPICS.LED_STATUS){
-            ledState = message.toString() === "ON";
+            stateledState = message.toString() === "ON";
             console.log("[mqtt] Estado enviado desde el Broker", ledState);
             //Envia actuañizacón a todos los clientes WebSocket
-            broadcastLedStatus();
+            //broadcastLedStatus();
         }
     });
 }
