@@ -1,3 +1,5 @@
+
+/*
 //"ws": libreria que permite crear un WebSocket
 const WebSocket = require("ws");
 //"axios": libreria que permite realizat peticiones http en Node
@@ -111,3 +113,10 @@ function broadcastLedStatus() {
   });
 }
 
+*/
+
+const {initMQTT,msjMQTTReception} = require("./src/mqttClient");
+const {initWebServer} = require("./src/webServer");
+initMQTT();
+msjMQTTReception();
+initWebServer();
