@@ -1,59 +1,102 @@
+//Importa libreria mqtt para crear cliente MQTT y usar sus funciones.
 const mqtt = require("mqtt");
+//Importa archivo de configuración
 const config = require("./config")
-const {setLed} = require("./state");
+//Importa función desde el modulo state
+const {setLed, setSensor} = require("./state");
+
+const EventEmitter = require("events")
+
+
+//Creación de EventEmitter para comunicar cambios
+class MqttEvents extends EventEmitter{}
+const mqttEvents = new MqttEvents();
 
 
 
+//Variable que contendra el objeto cliente MQTT una vez iniciadp
 let client_mqtt = null;
-//Notifica al WebSocket
-let onUpdateCallback = null;
 
-function initMQTT(onUpdate){
-    onUpdateCallback = onUpdate;
+
+//Función que inicializa la conexión MQTT
+function initMQTT(){
+    //Crea el cliente MQTT
     client_mqtt = mqtt.connect(`mqtts://${config.MQTT.BROKER}:${config.MQTT.PORT}`,{
         username: config.MQTT.USER,
         password: config.MQTT.PASSWORD,
+        connectTimeout: 10_000
     });
-    //Realiza la conexiòn con el broker HiveMQ Client
+    //Realiza la conexion con el broker HiveMQ Client
     client_mqtt.on("connect",() =>{
         console.log("[mqtt] Conectado a HiveMQ CLoud");
-        //Se suscribe al topico esp32/led/status 
-        client_mqtt.subscribe(config.TOPICS.LED_STATUS, (err) => {
-            if (!err) console.log("[mqtt] Suscripto a", config.TOPICS.LED_STATUS);
-            else console.error("[mqtt] Error al subcribir a ", config.TOPICS.LED_STATUS,err );
-        });
-        //Se suscribe al topico esp32/sensor/status 
-        client_mqtt.subscribe(config.TOPICS.SENSOR_READ, (err) => {
-            if (!err) console.log("[mqtt] Suscripto a", config.TOPICS.SENSOR_READ);
-            else console.error("[mqtt] Error al subcribir a ", config.TOPICS.SENSOR_READ,err );
+        
+        //Crea un arreglo con los tópicos a subscribir
+        const subs = [
+            config.TOPICS.LED_SET,
+            config.TOPICS.LED_STATUS,
+            config.TOPICS.SENSOR_READ
+        ].filter(Boolean);
+        
+        //Subscribe a cada topico
+        subs.forEach((t) => {
+            client_mqtt.subscribe(t,{qos: 0}, (err) => {
+                if (err) console.error("[mqtt] Error al subcribir a ", t,err );
+                else console.log("[mqtt] Suscripto a", t);
+            })
         });
 
-        client_mqtt.publish(config.TOPICS.BACKEND_INFO,"Backend conectado correctamente");
-    });
-
-    client_mqtt.on("message", (topic,message)=>{
-        //const data = message.toString()
-        if(topic === config.TOPICS.LED_STATUS){
-            const value = message.toString() === "ON";
-            console.log("[mqtt] Estado enviado desde el Broker", value);
-            setLed("led1",value);
-            if(onUpdateCallback) onUpdateCallback();
-        }
-        if(topic.startsWith("esp32/sensor/")){
-            const sensor = topic.split("/")[2];
-            console.log("[mqtt] Sensor ${sensor}:",value)
+        //Info de backend
+        if(config.TOPICS.BACKEND_INFO){
+            client_mqtt.publish(config.TOPICS.BACKEND_INFO,"Backend conectado correctamente");
         }
     });
 
+    //Registra el handler que se ejecuta cada vez que llega un mensaje
+    client_mqtt.on("message", (topic,messageBuffer)=>{
+        //Convierte el buffer recibido a string para procesarlo.
+        const payload = messageBuffer.toString();
+        if(topic.startsWith("esp32/led/")){
+            const parts = topic.split("/")
+            const ledName = parts[2];
+            const value = payload === "ON";
+            console.log(`[mqtt] LED ${ledName}:${value}`);
+            //Actualiza el estado en state del  
+            setLed(ledName,value);
 
+            mqttEvents.emit("ledUpdate",{
+                led: ledName,
+                value: value
+            });
+            return;
+        }
 
-
+    });
+    //Handler para errores del cliente MQTT
+    client_mqtt.on("error", (err) => {
+        console.error("[mqtt] Error", err);
+    });
+    //Evento que se dispara cuando el cliente intenta reconectarse
+    client_mqtt.on("reconnect", () => {
+        console.error("[mqtt] Reintentando conexión...");
+    });
+    //Evento que indica el cierre de la conexión
+    client_mqtt.on("close", () => {
+        console.error("[mqtt] Conexión cerrada");
+    });
 }
+//Función para publicar mensajes en el broker
 function publish(topic, message){
-    if (!client_mqtt) return;
-    client_mqtt.publish(topic, message);
+    //Si el cliente no esta inicalizado, avisa y sale
+    if (!client_mqtt){
+        console.warn("[mqtt] Cliente no inicializado")
+        return;
+    }
+    const payload = (typeof message === "string")? message: JSON.stringify(message);
+    //Publica payload en topic 
+    client_mqtt.publish(topic, payload, (err) => {
+        if(err) console.error("[mqtt] Error publicado", err);
+    })
 }
-
 
 
 module.exports = {

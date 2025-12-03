@@ -1,31 +1,51 @@
 //Maneja los leds y sensores
 
-const state = {
-    leds: {
-        led1: false,
-        led2: false
-    },
-    sensors: {
-        puerta: false,
-        ventana: false
+let leds = {};
+let sensors = {};
+
+//Actualiza el estado del LED
+function setLed(ledName, value) {
+    if (typeof ledName !== "string"){
+        console.warn(`[state] ledName debe ser un string`);
+        return;
     }
-};
-
-function setLed(name, value) {
-    state.leds[name] = value;
+    leds[ledName] = value;
+    console.log(`[state] LED actualizado: ${ledName}=${value}`)
 }
 
-function getLed(name){
-    return state.leds[name];
+//Actualiza el estado del Sensor
+function setSensor(sensorName, value) {
+    if (typeof sensorName !== "string"){
+        console.warn(`[state] sensorName debe ser un string`);
+        return;
+    }
+    sensors[sensorName] = value;
+    console.log(`[state] Sesnsor actualizado: ${sensorName}=${value}`)
 }
 
-function getFullState(){
-    return state;
+function getLed(ledName){
+    return leds[ledName];
 }
+function getAllLeds(){
+    return {...leds};
+}
+
+function getSensor(sensorName){
+    return sensors[sensorName];
+}
+function getAllSensors(){
+    return {...sensors};
+}
+
+
+
+
 
 module.exports = {
-    state,
     setLed,
+    setSensor,
     getLed,
-    getFullState
+    getAllLeds,
+    getSensor,
+    getAllSensors,
 };

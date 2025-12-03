@@ -5,8 +5,13 @@ const {getFullState} = require("./state");
 //const mqttClient = require("./mqttClient");
 //const {publishSetLed} = require("./mqttClient");
 
+
+
+
+
 let wss = null;
 
+//Funncionando correctamente
 function initWebSocket(){
     //Creación de servidor WebSocket
     wss = new WebSocket.Server({ port: config.WS_PORT });
