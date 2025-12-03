@@ -1,4 +1,4 @@
-
+/*
 
 //"ws": libreria que permite crear un WebSocket
 const WebSocket = require("ws");
@@ -113,11 +113,11 @@ function broadcastLedStatus() {
   });
 }
 
-
-/*
-const {initMQTT,msjMQTTReception} = require("./src/mqttClient");
-const {initWebServer} = require("./src/webServer");
-initMQTT();
-msjMQTTReception();
-initWebServer();
 */
+
+const {initMQTT} = require("./src/mqttClient");
+const {initWebSocket, broadcastUpdate } = require("./src/webServer");
+
+
+initWebSocket();
+initMQTT(broadcastUpdate );
