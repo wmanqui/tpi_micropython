@@ -14,7 +14,7 @@ MQTT_PASSWORD = "Whitealbum1"
 CLIENT_ID = b"esp32_client"
 #Topicos mqtt
 TOPIC_SET = b"esp32/led/set"
-TOPIC_STATUS = b"esp32/led/status"
+TOPIC_STATUS = b"esp32/led/led1"
 
 #Led integrado del esp32
 led = machine.Pin(2, machine.Pin.OUT)
@@ -83,3 +83,4 @@ if test_client:
         #Escucha mensajes mqtt
         test_client.check_msg()
         time.sleep(0.1)
+

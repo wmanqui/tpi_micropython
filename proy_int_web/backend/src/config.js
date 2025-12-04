@@ -9,7 +9,7 @@ module.exports= {
     },
 
     TOPICS:{
-        LED_STATUS: "esp32/led/status",
+        LED_STATUS: "esp32/led/led1",
         LED_SET:"esp32/led/set",
         SENSOR_READ: "esp32/sensor/status",
         BACKEND_INFO: "backend/info"

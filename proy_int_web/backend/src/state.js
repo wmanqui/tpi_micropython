@@ -1,4 +1,12 @@
-//Maneja los leds y sensores
+/* ---------------------------------------------------
+Este archivo se encarga de:
+
+    1-Guardar en memoria todos los leds(por nombre).
+
+    2-Guardar en memoria todos los sensores(por nombre).
+
+----------------------------------------------------- */
+
 
 let leds = {};
 let sensors = {};

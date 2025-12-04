@@ -17,3 +17,4 @@ wifi_connection()
 
 print("[boot] Completado.Ejecutando main.py...")
 
+

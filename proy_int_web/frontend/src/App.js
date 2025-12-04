@@ -34,7 +34,7 @@ function App(){
         //setLedOn(msg.data.led);
         setLedOn(msg.data.leds["led1"]);
       }
-      if(msg.type === "LED_UPDATE"){
+      if(msg.type === "UPDATE"){
         //setLedOn(msg.data.led);
         setLedOn(msg.data.leds["led1"]);
 

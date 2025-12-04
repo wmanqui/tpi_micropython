@@ -1,3 +1,18 @@
+/* ---------------------------------------------------
+Este archivo se encarga de:
+
+    1-Conectarse al broker MQTT.
+
+    2-Suscribirse a los tópicos seteados.
+
+    3-Cuando llega un mensaje MQTT → actualiza state.js.
+
+    4-Comunicarse hacia el WebSocket usando un EventEmitter.
+
+----------------------------------------------------- */
+
+
+
 //Importa libreria mqtt para crear cliente MQTT y usar sus funciones.
 const mqtt = require("mqtt");
 //Importa archivo de configuración
@@ -62,7 +77,7 @@ function initMQTT(){
             console.log(`[mqtt] LED ${ledName}:${value}`);
             //Actualiza el estado en state del  
             setLed(ledName,value);
-
+            //Indica al websocket que el estado del led cambio
             mqttEvents.emit("ledUpdate",{
                 led: ledName,
                 value: value
