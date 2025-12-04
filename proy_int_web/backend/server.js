@@ -118,6 +118,5 @@ function broadcastLedStatus() {
 const {initMQTT} = require("./src/mqttClient");
 const {initWebSocket, broadcastUpdate } = require("./src/webServer");
 
-
-//initWebSocket();
 initMQTT( );
+initWebSocket();

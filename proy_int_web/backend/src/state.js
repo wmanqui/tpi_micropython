@@ -38,7 +38,12 @@ function getAllSensors(){
 }
 
 
-
+function getFullState(){
+    return{
+        leds: {...leds},
+        sensors: {...sensors},
+    }
+}
 
 
 module.exports = {
@@ -47,5 +52,6 @@ module.exports = {
     getLed,
     getAllLeds,
     getSensor,
+    getFullState,
     getAllSensors,
 };

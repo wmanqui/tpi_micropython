@@ -31,10 +31,13 @@ function App(){
       const msg = JSON.parse(event.data);
       //Interpreta el tipo de mensaje
       if(msg.type === "STATUS"){
-        setLedOn(msg.data.led);
+        //setLedOn(msg.data.led);
+        setLedOn(msg.data.leds["led1"]);
       }
       if(msg.type === "LED_UPDATE"){
-        setLedOn(msg.data.led);
+        //setLedOn(msg.data.led);
+        setLedOn(msg.data.leds["led1"]);
+
       }
       
     };

@@ -101,5 +101,6 @@ function publish(topic, message){
 
 module.exports = {
     initMQTT,
-    publish
+    publish,
+    mqttEvents
 };

@@ -2,12 +2,7 @@
 const WebSocket = require("ws");
 const config = require("./config")
 const {getFullState} = require("./state");
-//const mqttClient = require("./mqttClient");
-//const {publishSetLed} = require("./mqttClient");
-
-
-
-
+const {mqttEvents, publish} = require("./mqttClient");
 
 let wss = null;
 
@@ -24,6 +19,10 @@ function initWebSocket(){
         ws.send(JSON.stringify({type:"STATUS", data: getFullState()}))
         ws.on("message",(msg) => onClientMessage(ws,msg));
         ws.on("close", () => console.log("[backend] Cliente desconectado"));
+
+        //MQTT a WS
+        mqttEvents.on("ledUpdate", () => broadcastUpdate());
+        mqttEvents.on("sensorUpdate", () => broadcastUpdate());
  
     });
 };
@@ -37,9 +36,7 @@ function onClientMessage(ws,msg){
             ws.send(JSON.stringify({ type: "STATUS", data: getFullState() }));
             break;
         case "SET_LED":
-            const newState = json.value === "ON" ? "ON" : "OFF";
-            // delegar a mqtt
-            require("./mqttClient").publish("esp32/led/set", newState);
+            publish(config.TOPICS.LED_SET, json.data);
         break;
 
         default:
@@ -48,23 +45,13 @@ function onClientMessage(ws,msg){
 
 }
 
-/*
-//Envía el estado a todos los clientes
-function broadcastLedStatus() {
-  const msg = JSON.stringify({
-    type: "LED_UPDATE",
-    data: { led: state.ledState },
-  });
-
-  ws.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) client.send(msg);
-  });
-}
-*/
 
 // Notifica a todos los clientes
 function broadcastUpdate() {
-  const msg = JSON.stringify({ type: "UPDATE", data: getFullState() });
+  const msg = JSON.stringify({ 
+    type: "UPDATE", 
+    data: getFullState(), 
+    });
 
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) client.send(msg);
@@ -73,8 +60,7 @@ function broadcastUpdate() {
 
 
 module.exports = {
-    initWebSocket,
-    broadcastUpdate
+    initWebSocket
 };
 
 
