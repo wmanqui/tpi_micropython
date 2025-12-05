@@ -47,8 +47,8 @@ function initMQTT(){
         
         //Crea un arreglo con los tópicos a subscribir
         const subs = [
-            config.TOPICS.LED_SET,
-            config.TOPICS.LED_STATUS,
+            config.TOPICS.SET_LED1,
+            config.TOPICS.STATUS_LED1,
             config.TOPICS.SENSOR_READ
         ].filter(Boolean);
         

@@ -23,7 +23,7 @@ mqttEvents.on("ledUpdate", () => broadcastUpdate());
 //mqttEvents.on("sensorUpdate", () => broadcastUpdate());
 
 
-//Funncionando correctamente
+//Funcionando correctamente
 function initWebSocket(){
     //Creación de servidor WebSocket
     wss = new WebSocket.Server({ port: config.WS_PORT });
@@ -52,7 +52,7 @@ function onClientMessage(ws,msg){
             console.log("[websockett] Estado inicial enviado al frontend:", getFullState());
             break;
         case "SET_LED":
-            publish(config.TOPICS.LED_SET, json.data);
+            publish(config.TOPICS.SET_LED1, json.data);
             console.log("[websocket] Enviando comando MQTT a broker");
         break;
 
