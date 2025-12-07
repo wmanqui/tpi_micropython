@@ -14,3 +14,4 @@ while True:
         print("[mqtt] Intentando reconectar..." )
         mqtt_module.connect_to_mqtt()
         
+    
