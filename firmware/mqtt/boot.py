@@ -1,5 +1,6 @@
 #Este codigo se ejecuta al arranque
 import esp
+import time
 import machine
 import ubinascii
 import wifi_module
@@ -13,7 +14,14 @@ esp.osdebug(None)
 DEVICE_ID = b"esp32_" + ubinascii.hexlify(machine.unique_id())
 print("[boot] boot.py ejecutado Device id:", DEVICE_ID)
 
-wifi_connection()
+connected = wifi_connection()
+
+if not connected:
+    print("[boot] ERROR: No se pudo conectar al WiFi")
+    print("[boot] Reiniciando en 5s...")
+    time.sleep(5)
+    machine.reset()
 
 print("[boot] Completado.Ejecutando main.py...")
+
 
