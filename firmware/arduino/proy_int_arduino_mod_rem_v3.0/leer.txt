@@ -1,0 +1,153 @@
+#include "command_handler.h"
+#include "automatic_control.h"
+#include "output_frame.h"
+#include "serial_communication.h"
+
+// Variables externas compartidas
+extern bool heatingBoilerOn;
+extern bool humidifierOn;
+extern float minTemp, maxTemp, minHumi, maxHumi, hystTemp, hystHumi;
+
+//--------------------------------------------------------------------
+//  Estructura base: Cada comando se asocia a una función
+//--------------------------------------------------------------------
+typedef void (*CommandFunction)(const String &args);
+
+struct CommandEntry {
+  const char *name;           // nombre del comando
+  CommandFunction function;   // función asociada
+  const char *description;    // descripción breve (opcional)
+};
+
+//--------------------------------------------------------------------
+//  Definición de funciones individuales de cada comando
+//--------------------------------------------------------------------
+void cmdRele0On(const String &) {
+  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(relay_heatingBoiler, HIGH);
+  heatingBoilerOn = true;
+  serialSend("arduino: Caldera_Encendida");
+  serialSend("OK");
+}
+
+void cmdRele0Off(const String &) {
+  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(relay_heatingBoiler, LOW);
+  heatingBoilerOn = false;
+  serialSend("arduino: Caldera_Apagada");
+  serialSend("OK");
+}
+
+void cmdRele1On(const String &) {
+  digitalWrite(relay_humidifier, LOW);
+  humidifierOn = true;
+  serialSend("arduino: Humidificador_Encendido");
+  serialSend("OK");
+}
+
+void cmdRele1Off(const String &) {
+  digitalWrite(relay_humidifier, HIGH);
+  humidifierOn = false;
+  serialSend("arduino: Humidificador_Apagado");
+  serialSend("OK");
+}
+
+void cmdSetTemp(const String &args) {
+  int comma = args.indexOf(',');
+  if (comma > 0) {
+    minTemp = args.substring(0, comma).toFloat();
+    maxTemp = args.substring(comma + 1).toFloat();
+    serialSend("arduino: Rango de temperatura actualizado");
+    serialSend("OK");
+  } else {
+    serialSend("arduino: Error en formato SET_TEMP");
+  }
+}
+
+void cmdSetHumi(const String &args) {
+  int comma = args.indexOf(',');
+  if (comma > 0) {
+    minHumi = args.substring(0, comma).toFloat();
+    maxHumi = args.substring(comma + 1).toFloat();
+    serialSend("arduino: Rango de humedad actualizado");
+    serialSend("OK");
+  } else {
+    serialSend("arduino: Error en formato SET_HUMI");
+  }
+}
+
+void cmdSetHyst(const String &args) {
+  int comma = args.indexOf(',');
+  if (comma > 0) {
+    hystTemp = args.substring(0, comma).toFloat();
+    hystHumi = args.substring(comma + 1).toFloat();
+    serialSend("arduino: Valores de histeresis actualizados");
+    serialSend("OK");
+  } else {
+    serialSend("arduino: Error en formato SET_HYST");
+  }
+}
+
+void cmdGetData(const String &) {
+  outputFrame(Serial);
+  serialSend("arduino: Enviando trama actualizada...");
+}
+
+// Listado de comandos (útil para debug)
+void cmdHelp(const String &) {
+  commandList();
+}
+
+//--------------------------------------------------------------------
+//  Tabla de comandos: solo agregás una línea para sumar uno nuevo
+//--------------------------------------------------------------------
+CommandEntry commandTable[] = {
+  {"rele_0_on",  cmdRele0On,  "Activa caldera"},
+  {"rele_0_off", cmdRele0Off, "Apaga caldera"},
+  {"rele_1_on",  cmdRele1On,  "Activa humidificador"},
+  {"rele_1_off", cmdRele1Off, "Apaga humidificador"},
+  {"SET_TEMP",   cmdSetTemp,  "Setea rango de temperatura (min,max)"},
+  {"SET_HUMI",   cmdSetHumi,  "Setea rango de humedad (min,max)"},
+  {"SET_HYST",   cmdSetHyst,  "Setea histeresis (temp,hum)"},
+  {"GET_DATA",   cmdGetData,  "Envía la trama actualizada"},
+  {"HELP",       cmdHelp,     "Muestra lista de comandos"}
+};
+
+const size_t COMMAND_COUNT = sizeof(commandTable) / sizeof(commandTable[0]);
+
+//--------------------------------------------------------------------
+//  Función principal: búsqueda y ejecución
+//--------------------------------------------------------------------
+void commandProcessing(const String &command) {
+  String cmd = command;
+  cmd.trim();
+
+  // Separar comando y argumentos (si tiene :)
+  int colonIndex = cmd.indexOf(':');
+  String name = (colonIndex > 0) ? cmd.substring(0, colonIndex) : cmd;
+  String args = (colonIndex > 0) ? cmd.substring(colonIndex + 1) : "";
+
+  // Buscar coincidencia en la tabla
+  for (size_t i = 0; i < COMMAND_COUNT; i++) {
+    if (name.equalsIgnoreCase(commandTable[i].name)) {
+      commandTable[i].function(args);
+      return;
+    }
+  }
+
+  serialSend("arduino: Comando no reconocido");
+}
+
+//--------------------------------------------------------------------
+//  Función auxiliar: lista todos los comandos disponibles
+//--------------------------------------------------------------------
+void commandList(void) {
+  serialSend("Comandos disponibles:");
+  for (size_t i = 0; i < COMMAND_COUNT; i++) {
+    Serial.print(" - ");
+    Serial.print(commandTable[i].name);
+    Serial.print(": ");
+    Serial.println(commandTable[i].description);
+  }
+}
+
