@@ -11,7 +11,7 @@ module.exports= {
     TOPICS:{
         STATUS_LED1: "esp32/led/led1",
         SET_LED1:"esp32/cmd/led1",
-        SENSOR_READ: "esp32/sensor/status",
+        SENSOR_READ: "esp32/hc05/data",
         BACKEND_INFO: "backend/info"
     }
 };

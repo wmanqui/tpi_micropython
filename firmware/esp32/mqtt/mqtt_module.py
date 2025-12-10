@@ -6,12 +6,16 @@ from umqtt.simple import MQTTClient
 from config import (
     MQTT_BROKER, MQTT_PORT, MQTT_USER,
     MQTT_PASSWORD, CLIENT_ID,
-    TOPIC_SET_LED1, TOPIC_STATUS_LED1
+    TOPIC_SET_LED1, TOPIC_STATUS_LED1,TOPIC_HC05_UART_DATA
 )
 #Importa funciones del modulo que maneja pines
 from pins_module import set_led, get_led_state,blink_builtin, set_builtin
 #Importa funciones del modulo wifi
 import wifi_module
+
+
+
+
 
 #Variable para llevar cuando se envio el ultimo ping MQTT
 last_ping = 0
@@ -50,9 +54,14 @@ def connect_to_mqtt():
             print("[esp32] Esp32 conectado a HiveMQ Cloud!!!")
             blink_builtin(times=3, delay=0.1)
             
+            #Subscribe a los topicos
             mqtt_esp32_client.subscribe(TOPIC_SET_LED1)
             print("[esp32] Suscripto a:", TOPIC_SET_LED1)
             
+            mqtt_esp32_client.subscribe(TOPIC_HC05_UART_DATA)
+            print("[esp32] Suscripto a:", TOPIC_HC05_UART_DATA)
+            
+           
             #Publica estado inicial
             publish_status(mqtt_esp32_client)
             #Resetea ping al conectar
@@ -65,62 +74,91 @@ def connect_to_mqtt():
             print("Reintentando en 5 segundos...")
             time.sleep(5)
     
-#Función que publica el estado del esp32    
+#Función que publica el estado del esp32 al inicio(Trabajando solo con 1 led)  
 def publish_status(client):
     status = "ON" if get_led_state("LED1") else "OFF"
-    client.publish(TOPIC_STATUS_LED1, status)
-    print("[esp32] Estado publicado:",status)
+    try:
+        client.publish(TOPIC_STATUS_LED1, status)
+        print("[esp32] Estado publicado:",status)
+    except Exception as e:
+        print("[esp32] Error publicando estado inicial:",e)
 
 #Función llamada por MQTTClient cuando llega un msj
 def mqtt_callback(topic, msg):
-    print("[esp32] Mensaje recibido:",topic,msg)
-    #Indicador de msj recibido
-    set_builtin(True)
-    time.sleep(0.05)
-    set_builtin(False)
+    global mqtt_esp32_client
+    try:
+        print("[esp32] Mensaje recibido:",topic,msg)
+        #Indicador de msj recibido
+        set_builtin(True)
+        time.sleep(0.05)
+        set_builtin(False)
     
-    topic = topic.decode()
-    msg = msg.decode()
+        topic = topic.decode()
+        msg = msg.decode()
     
-    if topic == TOPIC_SET_LED1:
-        set_led("LED1", msg== "ON")
-              
-        estado = "ON" if get_led_state("LED1") else "OFF"
-        mqtt_esp32_client.publish(TOPIC_STATUS_LED1, estado)
-        print("[esp32] LED1:",estado)
+        if topic == TOPIC_SET_LED1:
+            set_led("LED1", msg== "ON")
+            estado = "ON" if get_led_state("LED1") else "OFF"
+            try:
+                mqtt_esp32_client.publish(TOPIC_STATUS_LED1, estado)
+            except Exception as e:
+                print("[esp32] Error publicando estado:",e) 
+            print("[esp32] LED1:", estado)
 
-def loop():
-    global last_ping
+    except Exception as e:
+        print("[esp32] Error en callback MQTT",e)
+
+#Esta función se encarga de verificar el wifi, procesar msjs entrantes y enviar ping keep-alive
+def mqtt_service():
+    global last_ping, mqtt_esp32_client
     
-    #Verifica la conexion wifi
+    #Verifica y reconecta wifi si hace falta
     if not wifi_module.is_connected():
         print("[wifi] Conexión perdida: Reconectando wifi...")
         wifi_module.wifi_connection()
         time.sleep(1)
-        
-    #Escucha mensajes mqtt
-    mqtt_esp32_client.check_msg()
-    time.sleep(0.1)
+    try:
+        #Revisa msj entrantes(invoca mqtt_callback() si hay)
+        if mqtt_esp32_client is not None:
+            mqtt_esp32_client.check_msg()
+    except Exception as e:
+        print("[esp32] Error check_msj",e)
+        #Fuerza la reconexión
+        raise
+    time.sleep(0.05)
         
     #Envia ping keep-alive para TLS
     if time.time() - last_ping > PING_INTERVAL:
         try:
-            #Evita la conexion automatica del servidor
-            mqtt_esp32_client.ping()
-            print("[esp32] Ping enviado")
-            #Indicador de ping
-            set_builtin(True)
-            time.sleep(0.05)
-            set_builtin(False)
-            
+            if mqtt_esp32_client is not None:
+                mqtt_esp32_client.ping()
+                print("[esp32] Ping enviado")
+                #Indicador de ping
+                set_builtin(True)
+                time.sleep(0.05)
+                set_builtin(False)
+            last_ping = time.time()            
         except Exception as e:
             print("[esp32] Fallo el ping:",e)
             #Fuerza la reconexion
             raise
-        
-        last_ping = time.time()
+
     
 
 
-
+def publish(topic, message):
+    try:
+        if mqtt_esp32_client is None:
+            print("[esp32] publish: cliente MQTT no inicializado")
+            return False
+        mqtt_esp32_client.publish(topic, message)
+        print("[esp32] Publicado en", topic, ":", message)
+        return True
+    except Exception as e:
+        print("[esp32] Error al publicar:",e)
+        return False
+        
+        
+        
+        
 

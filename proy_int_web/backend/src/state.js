@@ -28,7 +28,7 @@ function setSensor(sensorName, value) {
         return;
     }
     sensors[sensorName] = value;
-    console.log(`[state] Sesnsor actualizado: ${sensorName}=${value}`)
+    console.log(`[state] Sensor actualizado: ${sensorName}=${value}`)
 }
 
 function getLed(ledName){

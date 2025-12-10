@@ -70,6 +70,8 @@ function initMQTT(){
     client_mqtt.on("message", (topic,messageBuffer)=>{
         //Convierte el buffer recibido a string para procesarlo.
         const payload = messageBuffer.toString();
+        
+        //Manejo de Leds
         if(topic.startsWith("esp32/led/")){
             const parts = topic.split("/")
             const ledName = parts[2];
@@ -82,6 +84,26 @@ function initMQTT(){
                 led: ledName,
                 value: value
             });
+            return;
+        }
+
+        //Manejo del JSON 
+        if (topic === "esp32/hc05/data"){
+            console.log("[mqtt] JSON recibido:", payload);
+            try{
+                const data = JSON.parse(payload);
+                if("temperatura" in data) setSensor("temperatura", data.temperatura);
+                if("humedad" in data) setSensor("humedad", data.humedad);
+                if("caldera" in data) setSensor("caldera", data.caldera);
+                if("ventilador" in data) setSensor("ventilador", data.ventilador);
+                if("humidificador" in data) setSensor("humidificador", data.humidificador);
+                if("deshumidificador" in data) setSensor("deshumidificador", data.deshumidificador);
+
+                mqttEvents.emit("sensorUpdate",data)
+            } catch(err){
+                console.error("[mqtt] Error al parsear JSON:", err);
+            }
+
             return;
         }
 
