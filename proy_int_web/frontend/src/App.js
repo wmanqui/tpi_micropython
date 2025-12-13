@@ -1,5 +1,6 @@
 import React, {useEffect,useState} from "react";
-import AnalogGauge from "./components/AnalogGauge";
+import AnalogGaugeTemperature from "./components/AnalogGaugeTemperature";
+import AnalogGaugeHumidity from "./components/AnalogGaugeHumidity";
 import LedIndicator from "./components/LedIndicator";
 import ControlButton from "./components/ControlButton";
 import Panel from "./components/Panel";
@@ -78,22 +79,36 @@ function App(){
 
   return(
   <>
-  <Panel title="TABLERO DE CONTROL_1">
-    <LedIndicator label="Caldera"     isOn={leds.led1}/>
-    <LedIndicator label="Humidificador"     isOn={leds.led2}/>
-    <LedIndicator label="Ventilador"     isOn={leds.led3}/>
-    <LedIndicator label="Deshumidificador"     isOn={leds.led4}/>
-  </Panel>
-<Panel title="TABLERO DE CONTROL_2">
-    <AnalogGauge value={temperature}/>
-</Panel>
-<Panel title="TABLERO DE CONTROL_3">
-    <AnalogGauge value={humidity}/>
-</Panel>
+  <div className="app-container">
 
+    <h1 className="app-title">
+      PROYECTO FINAL INTEGRADOR
+    </h1>
+    <div className="panel-row">
+      <Panel title="TABLERO DE CONTROL_1">
+        <LedIndicator label="Caldera"     isOn={leds.led1}/>
+        <LedIndicator label="Humidificador"     isOn={leds.led2}/>
+        <LedIndicator label="Ventilador"     isOn={leds.led3}/>
+        <LedIndicator label="Deshumidificador"     isOn={leds.led4}/>
+      </Panel>
+      <Panel title="TABLERO DE CONTROL_2">
+        <LedIndicator label="Caldera"     isOn={leds.led1}/>
+        <LedIndicator label="Humidificador"     isOn={leds.led2}/>
+        <LedIndicator label="Ventilador"     isOn={leds.led3}/>
+        <LedIndicator label="Deshumidificador"     isOn={leds.led4}/>
+      </Panel>
+    </div>
 
-
-</>
+    <div className="panel-row">
+      <Panel title="TABLERO DE CONTROL_3">
+        <AnalogGaugeTemperature value={temperature}/>
+      </Panel>
+      <Panel title="TABLERO DE CONTROL_4">
+       <AnalogGaugeHumidity value={humidity}/>
+      </Panel>
+    </div>
+  </div>
+  </>
   );
 }
 

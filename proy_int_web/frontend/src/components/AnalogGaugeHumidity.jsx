@@ -3,7 +3,7 @@ import { RadialGauge } from "canvas-gauges";
 import "./AnalogGauge.css";
 
 
-const AnalogGauge = ({ value }) => {
+const AnalogGaugeHumidity = ({ value }) => {
     const canvasRef = useRef(null);
     const gaugeRef = useRef(null);
     
@@ -14,9 +14,9 @@ const AnalogGauge = ({ value }) => {
 
         gaugeRef.current = new RadialGauge({
             renderTo: canvasRef.current,
-            width: 250,
-            height: 250,
-            units: "Temperatura °C",
+            width: 200,
+            height: 200,
+            units: "Humedad %",
             minValue: 0,
             maxValue: 100,
             startAngle: 45,
@@ -31,9 +31,9 @@ const AnalogGauge = ({ value }) => {
             strokeTicks: true,
 
             highlights: [
-                { from: 0, to: 40, color: "#4caf50" },
-                { from: 40, to: 70, color: "#ffc107" },
-                { from: 70, to: 100, color: "#f44336" }
+                { from: 0, to: 40, color: "#4c5cafff" },
+                { from: 40, to: 60, color: "#07ff0bff" },
+                { from: 60, to: 100, color: "#f44336" }
             ],
 
             needle: true,
@@ -82,4 +82,4 @@ const AnalogGauge = ({ value }) => {
     );
 };
 
-export default AnalogGauge;
+export default AnalogGaugeHumidity;
