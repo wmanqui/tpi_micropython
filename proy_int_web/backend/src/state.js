@@ -48,7 +48,12 @@ function getAllSensors(){
 
 function getFullState(){
     return{
-        leds: {...leds},
+        leds: {
+            led1: sensors.caldera ===1,
+            led2: sensors.humidificador ===1,
+            led3: sensors.ventilador ===1,
+            led4: sensors.deshumidificador ===1,
+        },
         sensors: {...sensors},
     }
 }

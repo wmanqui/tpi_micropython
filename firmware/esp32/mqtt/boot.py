@@ -24,4 +24,3 @@ if not connected:
 
 print("[boot] Completado.Ejecutando main.py...")
 
-

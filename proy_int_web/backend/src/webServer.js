@@ -20,7 +20,7 @@ let wss = null;
 
 //El mqttClient informa que se genero un cambio
 mqttEvents.on("ledUpdate", () => broadcastUpdate());
-//mqttEvents.on("sensorUpdate", () => broadcastUpdate());
+mqttEvents.on("sensorUpdate", () => broadcastUpdate());
 
 
 //Funcionando correctamente

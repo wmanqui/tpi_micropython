@@ -6,7 +6,7 @@ from umqtt.simple import MQTTClient
 from config import (
     MQTT_BROKER, MQTT_PORT, MQTT_USER,
     MQTT_PASSWORD, CLIENT_ID,
-    TOPIC_SET_LED1, TOPIC_STATUS_LED1,TOPIC_HC05_UART_DATA
+    TOPIC_SET_LED1, TOPIC_STATUS_LED1,TOPIC_ESP32_TO_BROKER
 )
 #Importa funciones del modulo que maneja pines
 from pins_module import set_led, get_led_state,blink_builtin, set_builtin
@@ -58,8 +58,8 @@ def connect_to_mqtt():
             mqtt_esp32_client.subscribe(TOPIC_SET_LED1)
             print("[esp32] Suscripto a:", TOPIC_SET_LED1)
             
-            mqtt_esp32_client.subscribe(TOPIC_HC05_UART_DATA)
-            print("[esp32] Suscripto a:", TOPIC_HC05_UART_DATA)
+            mqtt_esp32_client.subscribe(TOPIC_ESP32_TO_BROKER)
+            print("[esp32] Suscripto a:", TOPIC_ESP32_TO_BROKER)
             
            
             #Publica estado inicial
@@ -87,15 +87,20 @@ def publish_status(client):
 def mqtt_callback(topic, msg):
     global mqtt_esp32_client
     try:
+        #Convierte bytes a str
+        if isinstance(topic, bytes):
+            topic = topic.decode()
+        if isinstance(msg, bytes):
+            msg = msg.decode()
+        
+        
         print("[esp32] Mensaje recibido:",topic,msg)
         #Indicador de msj recibido
         set_builtin(True)
         time.sleep(0.05)
         set_builtin(False)
     
-        topic = topic.decode()
-        msg = msg.decode()
-    
+        
         if topic == TOPIC_SET_LED1:
             set_led("LED1", msg== "ON")
             estado = "ON" if get_led_state("LED1") else "OFF"
@@ -151,6 +156,7 @@ def publish(topic, message):
         if mqtt_esp32_client is None:
             print("[esp32] publish: cliente MQTT no inicializado")
             return False
+        
         mqtt_esp32_client.publish(topic, message)
         print("[esp32] Publicado en", topic, ":", message)
         return True
@@ -161,4 +167,3 @@ def publish(topic, message):
         
         
         
-

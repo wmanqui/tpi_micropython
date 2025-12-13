@@ -29,7 +29,7 @@ const mqttEvents = new MqttEvents();
 
 
 
-//Variable que contendra el objeto cliente MQTT una vez iniciadp
+//Variable que contendra el objeto cliente MQTT una vez iniciado
 let client_mqtt = null;
 
 
@@ -89,7 +89,7 @@ function initMQTT(){
 
         //Manejo del JSON 
         if (topic === "esp32/hc05/data"){
-            console.log("[mqtt] JSON recibido:", payload);
+            //console.log("[mqtt] JSON recibido:", payload);
             try{
                 const data = JSON.parse(payload);
                 if("temperatura" in data) setSensor("temperatura", data.temperatura);

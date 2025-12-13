@@ -13,9 +13,9 @@
 /*              Esta versión de firmware corresponde al modulo remoto y permite, recibir       */
 /*              y enviar datos via bluetooth.                                                  */
 /*                                                                                             */
-/* Fecha: 07-10-25                                                                             */
+/* Fecha: 13-12-25                                                                             */
 /* Autor: Walter Rene Manqui                                                                   */
-/* Versión: proy_int_arduino_mod_rem_v2.1                                                      */
+/* Versión: proy_int_arduino_mod_rem_v3.0                                                      */
 /* Hardware:                                                                                   */
 /*            -Sensor dht22 conectado al pin 2                                                 */
 /*            -Modulo hc-05 conectado al pin 8,9                                               */
@@ -39,6 +39,8 @@
 #include "bluetooth.h"            //Modulo para el manejo de la comunicación bluetooth
 
 
+static unsigned long sendTime = 10000;
+
 void setup() {
   //Inicializaciòn de puerto serie
   serialCommunicationInitialization();
@@ -52,7 +54,7 @@ void setup() {
   // Inicializa módulo HC-05/06 para trabajar con arduino Mega
   //bluetoothInit(true);            
   //Se envia el  mensaje con la versiòn del firmware
-  serialSend("proy_int_arduino_v2.1 - Modulo Remoto");
+  serialSend("proy_int_web_v3.0 - Modulo Remoto");
 }
 
 void loop() {
@@ -62,10 +64,15 @@ void loop() {
         //Realiza el control automatico
         automaticControl();
       }
-      //Envia trama de salida por el puerto serie
-      outputFrame(Serial);
-      //Envia trama de salida via bluetooth
-      outputFrame(*bluetoothGetPort());
+  }
+  
+  static unsigned long lastFrameTime = 0;
+  if (millis() - lastFrameTime >= sendTime){
+    lastFrameTime = millis();
+    //Envia trama de salida por el puerto serie
+    outputFrame(Serial);
+    //Envia trama de salida via bluetooth
+    outputFrame(*bluetoothGetPort());
   }
 
   //Lee los datos provenientes del módulo bluetooth
