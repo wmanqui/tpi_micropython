@@ -20,8 +20,10 @@ TOPIC_SET_LED1 = "esp32/led1/set"
 # Estado actual del LED1 reportado por el ESP32
 TOPIC_STATUS_LED1 = "esp32/led1/status"
 
-# Datos provenientes del HC-05 convertidos a JSON
-#TOPIC_HC05_UART_DATA = b"esp32/hc05/data"
-TOPIC_ESP32_TO_BROKER = "esp32/hc05/data"
+#Datos provenientes del HC-05 convertidos a JSON
+#TOPIC_ESP32_TO_BROKER = "esp32/hc05/data"
+TOPIC_ESP32_TO_BROKER = "esp32/hc05/send"
 
+#Datos provenientes del broker
+TOPIC_BROKER_TO_ESP32 = "esp32/hc05/receive"
 

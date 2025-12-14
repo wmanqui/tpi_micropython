@@ -1,16 +1,16 @@
 import time
-#import uart_hc05_module
+import uart_hc05_module
 import mqtt_module
 import json
 import sys
 import data_manipulation_module
 from config import TOPIC_ESP32_TO_BROKER
 from data_manipulation_module import frame_to_json
-from uart_hc05_module import process_uart_data
+from uart_hc05_module import init_uart_hc05, process_uart_data
 
 
 # --- Solo debug ---
-SIMULAR_TRAMA = True     
+SIMULAR_TRAMA = False     
 SIM_TIMEOUT = 30.0         
 ultima_simulacion = 0
 
@@ -35,7 +35,7 @@ def process_simulated_data():
 
 def setup():
     # Inicializa la UART para comunicarse con el modulo HC-05
-    #uart_hc05_module.init_uart_hc05()
+    uart_hc05_module.init_uart_hc05()
     # Realiza la conexión con el Broker HiveMQ Cloud
     mqtt_module.connect_to_mqtt()
     print("[main] Sistema listo!!!")
@@ -47,9 +47,9 @@ def loop():
             #Mantiene vivo el MQTT y procesa el mensaje
             mqtt_module.mqtt_service()  
             #Procesa trama enviada desde modulo hc-05
-            #process_uart_data()          
+            process_uart_data()          
             #Procesa trama simulada
-            process_simulated_data()
+            #process_simulated_data()
             
             time.sleep(0.05)
 

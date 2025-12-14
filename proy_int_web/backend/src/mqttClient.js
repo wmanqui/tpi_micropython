@@ -49,7 +49,7 @@ function initMQTT(){
         const subs = [
             config.TOPICS.SET_LED1,
             config.TOPICS.STATUS_LED1,
-            config.TOPICS.SENSOR_READ
+            config.TOPICS.ESP32_TO_BROKER
         ].filter(Boolean);
         
         //Subscribe a cada topico
@@ -88,7 +88,7 @@ function initMQTT(){
         }
 
         //Manejo del JSON 
-        if (topic === "esp32/hc05/data"){
+        if (topic === config.TOPICS.ESP32_TO_BROKER){
             //console.log("[mqtt] JSON recibido:", payload);
             try{
                 const data = JSON.parse(payload);
