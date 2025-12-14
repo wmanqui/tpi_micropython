@@ -32,7 +32,7 @@ const AnalogGaugeHumidity = ({ value }) => {
 
             highlights: [
                 { from: 0, to: 40, color: "#4c5cafff" },
-                { from: 40, to: 60, color: "#07ff0bff" },
+                { from: 40, to: 60, color: "#28b94aff" },
                 { from: 60, to: 100, color: "#f44336" }
             ],
 

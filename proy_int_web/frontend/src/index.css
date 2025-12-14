@@ -29,7 +29,12 @@ html, body, #root {
   gap: 4px;                
 }
 
-
+.cmd-item{
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: 'Courier New', Courier, monospace;
+  color: #4da6ff;
+}
 
 
 

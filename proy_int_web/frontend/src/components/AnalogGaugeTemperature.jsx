@@ -17,20 +17,20 @@ const AnalogGaugeTemperature = ({ value }) => {
             width: 200,
             height: 200,
             units: "Temperatura °C",
-            minValue: 0,
+            minValue: 10,
             maxValue: 40,
             startAngle: 45,
             ticksAngle: 270,
 
             majorTicks: [
-                "0", "5","10","15", "20","25", "30","35", "40"
+                "10","15", "20","25", "30","35", "40"
             ],
 
             minorTicks: 5,
             strokeTicks: true,
 
             highlights: [
-                { from: 0, to: 21, color: "#0e2da7ff" },
+                { from: 10, to: 21, color: "#4c5cafff" },
                 { from: 21, to: 26, color: "#28b94aff" },
                 { from: 26, to: 40, color: "#f44336" }
             ],
