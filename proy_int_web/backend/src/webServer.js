@@ -55,7 +55,10 @@ function onClientMessage(ws,msg){
             publish(config.TOPICS.SET_LED1, json.data);
             console.log("[websocket] Enviando comando MQTT a broker");
         break;
-
+        case "SEND_COMMAND":
+            publish(config.TOPICS.BROKER_TO_ESP32, json.data);
+            console.log("[websocket] Comando recibido", json.data);
+        break;
         default:
             ws.send(JSON.stringify({ type: "ERROR", data: "Comando desconocido" }));
   }

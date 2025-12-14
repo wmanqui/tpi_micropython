@@ -12,6 +12,7 @@ module.exports= {
         STATUS_LED1: "esp32/led/led1",
         SET_LED1:"esp32/cmd/led1",
         ESP32_TO_BROKER: "esp32/hc05/send",
+        BROKER_TO_ESP32: "esp32/hc05/receive",
         BACKEND_INFO: "backend/info"
     }
 };

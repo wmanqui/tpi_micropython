@@ -49,7 +49,8 @@ function initMQTT(){
         const subs = [
             config.TOPICS.SET_LED1,
             config.TOPICS.STATUS_LED1,
-            config.TOPICS.ESP32_TO_BROKER
+            config.TOPICS.ESP32_TO_BROKER,
+            config.TOPICS.BROKER_TO_ESP32
         ].filter(Boolean);
         
         //Subscribe a cada topico

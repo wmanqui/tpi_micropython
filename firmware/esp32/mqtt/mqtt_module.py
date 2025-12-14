@@ -6,7 +6,7 @@ from umqtt.simple import MQTTClient
 from config import (
     MQTT_BROKER, MQTT_PORT, MQTT_USER,
     MQTT_PASSWORD, CLIENT_ID,
-    TOPIC_SET_LED1, TOPIC_STATUS_LED1,TOPIC_ESP32_TO_BROKER, TOPIC_BROKER_TO_ESP32
+    TOPIC_ESP32_TO_BROKER, TOPIC_BROKER_TO_ESP32
 )
 #Importa funciones del modulo que maneja pines
 from pins_module import set_led, get_led_state,blink_builtin, set_builtin
@@ -56,18 +56,13 @@ def connect_to_mqtt():
             print("[esp32] Esp32 conectado a HiveMQ Cloud!!!")
             blink_builtin(times=3, delay=0.1)
             
-            #Subscribe a los topicos
-            #mqtt_esp32_client.subscribe(TOPIC_SET_LED1)
-            #print("[esp32] Suscripto a:", TOPIC_SET_LED1)
-            
+            #Subscribe a los topicos         
             mqtt_esp32_client.subscribe(TOPIC_ESP32_TO_BROKER)
             print("[esp32] Suscripto a:", TOPIC_ESP32_TO_BROKER)
             
             mqtt_esp32_client.subscribe(TOPIC_BROKER_TO_ESP32)
             print("[esp32] Suscripto a:", TOPIC_BROKER_TO_ESP32)
             
-            #Publica estado inicial
-            #publish_status(mqtt_esp32_client)
             #Resetea ping al conectar
             last_ping=time.time()
             return 
@@ -95,26 +90,15 @@ def mqtt_callback(topic, msg):
         if isinstance(topic, bytes):
             topic = topic.decode()
         if isinstance(msg, bytes):
-            msg = msg.decode()
-        
+            msg = msg.decode()  
         
         print("[esp32] Mensaje recibido:",topic,msg)
         #Indicador de msj recibido
         set_builtin(True)
         time.sleep(0.05)
         set_builtin(False)
-    
-        
-        if topic == TOPIC_SET_LED1:
-            set_led("LED1", msg== "ON")
-            estado = "ON" if get_led_state("LED1") else "OFF"
-            try:
-                mqtt_esp32_client.publish(TOPIC_STATUS_LED1, estado)
-            except Exception as e:
-                print("[esp32] Error publicando estado:",e) 
-            print("[esp32] LED1:", estado)
-            
-        elif topic == TOPIC_BROKER_TO_ESP32:
+
+        if topic == TOPIC_BROKER_TO_ESP32:
             #Envia el msj recibido al hc-05 por UART
             uart_hc05_module.uart_send(msg)
             

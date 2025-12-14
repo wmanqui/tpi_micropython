@@ -2,8 +2,9 @@ import React, {useEffect,useState} from "react";
 import AnalogGaugeTemperature from "./components/AnalogGaugeTemperature";
 import AnalogGaugeHumidity from "./components/AnalogGaugeHumidity";
 import LedIndicator from "./components/LedIndicator";
-import ControlButton from "./components/ControlButton";
+//import ControlButton from "./components/ControlButton";
 import Panel from "./components/Panel";
+//import { type } from "os";
 
 
 function App(){
@@ -22,6 +23,8 @@ function App(){
 
   const[temperature, setTemperature] = useState(0);
   const[humidity, setHumidity] = useState(0);
+
+  const[cmd, setCmd] = useState("");  
 
   useEffect(() => {
     //Se conecta al WebSocket 
@@ -63,7 +66,7 @@ function App(){
     };
     return () => ws.close();
   },[]);
-
+/*
   const toggleLed = () =>{
     if(socket){
       //Decide el nuevo estado
@@ -74,6 +77,19 @@ function App(){
         //data: newState
       }));
     }
+
+  };
+*/
+  //Función para enviar comando
+  const sendCmd = () => {
+    if(!socket || cmd.trim() === "") return;
+
+    socket.send(JSON.stringify({
+      type: "SEND_COMMAND",
+      data: cmd
+    }));
+    //Limpia el textbox
+    setCmd("");
 
   };
 
@@ -92,10 +108,17 @@ function App(){
         <LedIndicator label="Deshumidificador"     isOn={leds.led4}/>
       </Panel>
       <Panel title="TABLERO DE CONTROL_2">
-        <LedIndicator label="Caldera"     isOn={leds.led1}/>
-        <LedIndicator label="Humidificador"     isOn={leds.led2}/>
-        <LedIndicator label="Ventilador"     isOn={leds.led3}/>
-        <LedIndicator label="Deshumidificador"     isOn={leds.led4}/>
+        <div className="cmd-box">
+          <input
+            type="text"
+            placeholder="Ingrese Comando..."
+            value={cmd}
+            onChange={(e) => setCmd(e.target.value)}
+          />
+          <button onClick={sendCmd}>
+            Enviar
+          </button>
+        </div>
       </Panel>
     </div>
 
