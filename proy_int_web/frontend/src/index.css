@@ -1,7 +1,11 @@
+
 html, body, #root {
   height: 100%;
   margin: 0;
-  background: #111;
+  background:
+    radial-gradient(circle at 20% 20%, #1e2a38, transparent 40%),
+    radial-gradient(circle at 80% 80%, #0d1b2a, transparent 45%),
+    linear-gradient(180deg, #0b0f14, #05070a);
 }
 
 .app-container{
@@ -14,13 +18,30 @@ html, body, #root {
 
 
 .app-title {
-  color: #e0e0e0;
-  font-size: 35px;
-  letter-spacing: 4px;
-  margin-bottom: 30px;
-  font-family: 'Arial', sans-serif;
-  text-shadow: 0 0 6px rgba(0,0,0,0.7);
+  color: #4da6ff;
+  font-size: 36px;
+  letter-spacing: 6px;
+  margin-bottom: 40px;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 4px rgba(77,166,255,0.8),
+    0 0 12px rgba(77,166,255,0.5),
+    0 2px 10px rgba(0,0,0,0.9);
 }
+
+
+.app-subtitle{
+  margin-top: -18px;
+  margin-bottom: 30px;
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: #9bb7df;
+  font-family: 'Courier New', monospace;
+  opacity: 0.85;
+}
+
 
 .cmd-box {
   display: flex;

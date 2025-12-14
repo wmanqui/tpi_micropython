@@ -84,17 +84,16 @@ function App(){
   <>
   <div className="app-container">
 
-    <h1 className="app-title">
-      PROYECTO FINAL INTEGRADOR
-    </h1>
+    <h1 className="app-title">PROYECTO FINAL INTEGRADOR</h1>
+    <div className="app-subtitle">Sistema de Ambiente Controlado</div>
     <div className="panel-row">
-      <Panel title="TABLERO DE CONTROL_1">
+      <Panel title="INDICADORES DE ESTADO">
         <LedIndicator label="Caldera"     isOn={leds.led1}/>
         <LedIndicator label="Humidificador"     isOn={leds.led2}/>
         <LedIndicator label="Ventilador"     isOn={leds.led3}/>
         <LedIndicator label="Deshumidificador"     isOn={leds.led4}/>
       </Panel>
-      <Panel title="TABLERO DE CONTROL_2">
+      <Panel title="ENVIO DE COMANDOS">
         <div className="cmd-box">
           <ControlInput
             placeholder="Ingrese Comando..."
@@ -112,10 +111,10 @@ function App(){
     </div>
 
     <div className="panel-row">
-      <Panel title="TABLERO DE CONTROL_3">
+      <Panel title="MEDICIÓN DE TEMPERATURA">
         <AnalogGaugeTemperature value={temperature}/>
       </Panel>
-      <Panel title="TABLERO DE CONTROL_4">
+      <Panel title="MEDICIÓN DE HUMEDAD">
        <AnalogGaugeHumidity value={humidity}/>
       </Panel>
     </div>
