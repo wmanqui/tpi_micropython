@@ -2,9 +2,9 @@ import React, {useEffect,useState} from "react";
 import AnalogGaugeTemperature from "./components/AnalogGaugeTemperature";
 import AnalogGaugeHumidity from "./components/AnalogGaugeHumidity";
 import LedIndicator from "./components/LedIndicator";
-//import ControlButton from "./components/ControlButton";
+import ControlButton from "./components/ControlButton";
+import ControlInput from "./components/ControlInput";
 import Panel from "./components/Panel";
-//import { type } from "os";
 
 
 function App(){
@@ -66,20 +66,7 @@ function App(){
     };
     return () => ws.close();
   },[]);
-/*
-  const toggleLed = () =>{
-    if(socket){
-      //Decide el nuevo estado
-      // const newState = !ledOn? "ON" : "OFF"; 
-      //Envia el JSON al servidor para solicitar modificación
-      socket.send(JSON.stringify({
-        type: "SET_LED",
-        //data: newState
-      }));
-    }
 
-  };
-*/
   //Función para enviar comando
   const sendCmd = () => {
     if(!socket || cmd.trim() === "") return;
@@ -109,15 +96,17 @@ function App(){
       </Panel>
       <Panel title="TABLERO DE CONTROL_2">
         <div className="cmd-box">
-          <input
-            type="text"
+          <ControlInput
             placeholder="Ingrese Comando..."
             value={cmd}
             onChange={(e) => setCmd(e.target.value)}
           />
-          <button onClick={sendCmd}>
-            Enviar
-          </button>
+          <ControlButton
+            isOn={cmd.trim() !== ""}
+            onClick={sendCmd}
+            labelOn="Enviar"
+            labelOff="Sin comando"
+          />
         </div>
       </Panel>
     </div>

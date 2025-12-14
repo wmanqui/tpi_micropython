@@ -1,0 +1,35 @@
+.control-input{
+   padding: 04px 12px; 
+   font-size: 14px;
+   font-family: 'Courier New', monospace;
+   border-radius: 10px;
+   border: 2px solid #111;
+   background: linear-gradient(
+    180deg,
+    #2a2a2a,
+    #111
+   );
+   color: #4da6ff;
+   outline: none;
+   min-width: 240px;
+
+   box-shadow: 
+    inset 0 0 8px rgba(0, 0, 0, 0.95),
+    inset 0 2px 2px rgba(255, 255, 255, 0.05),
+    0 4px 10px rgba(0, 0, 0, 0.6);
+    
+   transition: 025s ease-in-out;
+
+}
+
+
+.control-input::placeholder{
+    color: #777;
+}
+
+.control-input:focus{
+    border-color: #4da6ff;
+    box-shadow: 
+        inset 0 0 8px rgba(0, 0, 0, 0.95),
+        0 0 10px rgba(77, 166, 255, 0.8);
+}
