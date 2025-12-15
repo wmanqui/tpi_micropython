@@ -30,22 +30,18 @@ function setSensor(sensorName, value) {
     sensors[sensorName] = value;
     console.log(`[state] Sensor actualizado: ${sensorName}=${value}`)
 }
-
 function getLed(ledName){
     return leds[ledName];
 }
 function getAllLeds(){
     return {...leds};
 }
-
 function getSensor(sensorName){
     return sensors[sensorName];
 }
 function getAllSensors(){
     return {...sensors};
 }
-
-
 function getFullState(){
     return{
         leds: {
@@ -57,8 +53,6 @@ function getFullState(){
         sensors: {...sensors},
     }
 }
-
-
 module.exports = {
     setLed,
     setSensor,

@@ -15,10 +15,6 @@ import wifi_module
 
 import uart_hc05_module
 
-
-
-
-
 #Variable para llevar cuando se envio el ultimo ping MQTT
 last_ping = 0
 #Intervalo en segundos para enviar pings keep-alive
@@ -48,7 +44,8 @@ def connect_to_mqtt():
                 ssl=True,
                 ssl_params=ssl_params
             )
-            #Registra la funcion "mqtt_callback" como manejador que sera llamada cuando llegue un msj suscripto
+            #Registra la funcion "mqtt_callback" como manejador que 
+            #sera llamada cuando llegue un msj suscripto
             mqtt_esp32_client.set_callback(mqtt_callback)
             #Establece la conexion 
             mqtt_esp32_client.connect()
@@ -66,7 +63,8 @@ def connect_to_mqtt():
             #Resetea ping al conectar
             last_ping=time.time()
             return 
-        #si ocurre cualquier excepcón durante la creacion/conexion del cliente, se imprime el error y vuelve a intentar
+        #si ocurre cualquier excepcón durante la creacion/conexion del cliente, 
+        # se imprime el error y vuelve a intentar
         except Exception as e:
             print(f"[esp32] Fallo la conexión del Esp32 a HiveMQ Cloud: {e}")
             blink_builtin(times=2, delay=0.3)
@@ -106,7 +104,8 @@ def mqtt_callback(topic, msg):
     except Exception as e:
         print("[esp32] Error en callback MQTT",e)
 
-#Esta función se encarga de verificar el wifi, procesar msjs entrantes y enviar ping keep-alive
+#Esta función se encarga de verificar el wifi, procesar msjs 
+# entrantes y enviar ping keep-alive
 def mqtt_service():
     global last_ping, mqtt_esp32_client
     
@@ -140,9 +139,6 @@ def mqtt_service():
             print("[esp32] Fallo el ping:",e)
             #Fuerza la reconexion
             raise
-
-    
-
 
 def publish(topic, message):
     try:

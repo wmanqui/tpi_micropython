@@ -12,7 +12,6 @@ function App(){
   //Crea variable "socket" y la inicializa en "null"
   //"setSocket" permite cambiar "socket"
   const[socket, setsocket] = useState(null);
-
   
   const[leds,setLeds] = useState({
     led1:false,
@@ -122,7 +121,6 @@ function App(){
   </>
   );
 }
-
 
 
 

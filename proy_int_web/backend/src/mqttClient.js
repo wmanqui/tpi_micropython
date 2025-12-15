@@ -12,7 +12,6 @@ Este archivo se encarga de:
 ----------------------------------------------------- */
 
 
-
 //Importa libreria mqtt para crear cliente MQTT y usar sus funciones.
 const mqtt = require("mqtt");
 //Importa archivo de configuración
@@ -26,8 +25,6 @@ const EventEmitter = require("events")
 //Creación de EventEmitter para comunicar cambios
 class MqttEvents extends EventEmitter{}
 const mqttEvents = new MqttEvents();
-
-
 
 //Variable que contendra el objeto cliente MQTT una vez iniciado
 let client_mqtt = null;
@@ -113,6 +110,7 @@ function initMQTT(){
     client_mqtt.on("error", (err) => {
         console.error("[mqtt] Error", err);
     });
+    
     //Evento que se dispara cuando el cliente intenta reconectarse
     client_mqtt.on("reconnect", () => {
         console.error("[mqtt] Reintentando conexión...");

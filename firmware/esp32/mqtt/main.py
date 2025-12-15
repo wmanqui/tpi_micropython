@@ -39,8 +39,7 @@ def setup():
     # Realiza la conexión con el Broker HiveMQ Cloud
     mqtt_module.connect_to_mqtt()
     print("[main] Sistema listo!!!")
-    
-
+  
 def loop():
     while True:
         try:
@@ -62,7 +61,6 @@ def loop():
             except Exception as e2:
                 print("[main] Error, reconectando MQTT:", e2)
                 time.sleep(5)
-
 
 #Asegura que el codigo solo se ejecute si el archivo es el principal
 if __name__ == "__main__":

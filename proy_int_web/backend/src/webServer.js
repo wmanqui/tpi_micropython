@@ -8,7 +8,6 @@ Este archivo se encarga de:
 
 ----------------------------------------------------- */
 
-
 //"ws": libreria que permite crear un WebSocket
 const WebSocket = require("ws");
 const config = require("./config")
